@@ -25,7 +25,6 @@ jobs:
           ./gradlew build
           mkdir -p deploy
           cp -r build/distributions/* deploy/
-          cp -r src/main/resources/static/* deploy/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
