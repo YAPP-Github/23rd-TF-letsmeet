@@ -13,22 +13,23 @@ class ApiClient(
         onSuccess: (Schedule?) -> Unit,
         onFailure: ((String) -> Unit)? = null,
     ) {
-        val xmlHttpRequest = XMLHttpRequest()
-        xmlHttpRequest.open("GET", "$baseUrl/schedule/$scheduleId/", true)
-        xmlHttpRequest.send()
-        xmlHttpRequest.onreadystatechange = {
-            if (xmlHttpRequest.readyState == "4".toShort()) {
-                if (xmlHttpRequest.status == "200".toShort()) {
-                    val schedule = try {
-                        Schedule.from(xmlHttpRequest.responseText)
-                    } catch (e: Throwable) {
-                        println("Failed to parse schedule. responseText: ${xmlHttpRequest.responseText}")
-                        null
+        with(XMLHttpRequest()) {
+            open("GET", "$baseUrl/schedule/$scheduleId/", true)
+            send()
+            onreadystatechange = {
+                if (readyState == "4".toShort()) {
+                    if (status == "200".toShort()) {
+                        val schedule = try {
+                            Schedule.from(responseText)
+                        } catch (e: Throwable) {
+                            println("Failed to parse schedule. responseText: $responseText")
+                            null
+                        }
+                        onSuccess(schedule)
+                    } else {
+                        onFailure?.let { it(responseText) }
+                            ?: println("Failed to get schedule. readySate: ${readyState}, status: ${status}, responseText: $responseText")
                     }
-                    onSuccess(schedule)
-                } else {
-                    onFailure?.let { it(xmlHttpRequest.responseText) }
-                        ?: println("Failed to get schedule. readySate: ${xmlHttpRequest.readyState}, status: ${xmlHttpRequest.status}, responseText: ${xmlHttpRequest.responseText}")
                 }
             }
         }
@@ -51,24 +52,25 @@ class ApiClient(
             end_time = endTime,
         )
 
-        val xmlHttpRequest = XMLHttpRequest()
-        xmlHttpRequest.open("POST", "$baseUrl/schedule/", true)
-        xmlHttpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-        xmlHttpRequest.setRequestHeader("Accept", "application/json")
-        xmlHttpRequest.send(scheduleCreateRequest.toJson())
-        xmlHttpRequest.onreadystatechange = {
-            if (xmlHttpRequest.readyState == "4".toShort()) {
-                if (xmlHttpRequest.status == "200".toShort()) {
-                    val schedule = try {
-                        Schedule.from(xmlHttpRequest.responseText)
-                    } catch (e: Throwable) {
-                        println("Failed to parse schedule. responseText: ${xmlHttpRequest.responseText}")
-                        null
+        with(XMLHttpRequest()) {
+            open("POST", "$baseUrl/schedule/", true)
+            setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+            setRequestHeader("Accept", "application/json")
+            send(scheduleCreateRequest.toJson())
+            onreadystatechange = {
+                if (readyState == "4".toShort()) {
+                    if (status == "200".toShort()) {
+                        val schedule = try {
+                            Schedule.from(responseText)
+                        } catch (e: Throwable) {
+                            println("Failed to parse schedule. responseText: $responseText")
+                            null
+                        }
+                        onSuccess(schedule)
+                    } else {
+                        onFailure?.let { it(responseText) }
+                            ?: println("Failed to create schedule. readySate: ${readyState}, status: ${status}, responseText: $responseText")
                     }
-                    onSuccess(schedule)
-                } else {
-                    onFailure?.let { it(xmlHttpRequest.responseText) }
-                        ?: println("Failed to create schedule. readySate: ${xmlHttpRequest.readyState}, status: ${xmlHttpRequest.status}, responseText: ${xmlHttpRequest.responseText}")
                 }
             }
         }
