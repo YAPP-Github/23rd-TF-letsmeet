@@ -59,7 +59,7 @@ class ApiClient(
             send(scheduleCreateRequest.toJson())
             onreadystatechange = {
                 if (readyState == "4".toShort()) {
-                    if (status == "200".toShort()) {
+                    if (status == "201".toShort()) {
                         val schedule = try {
                             Schedule.from(responseText)
                         } catch (e: Throwable) {
