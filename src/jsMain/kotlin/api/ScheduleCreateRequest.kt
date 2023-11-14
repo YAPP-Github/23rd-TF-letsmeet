@@ -10,10 +10,10 @@ data class ScheduleCreateRequest(
      * minLength: 1
      */
     val name: String,
-    val start_date: String,
-    val end_date: String,
-    val start_time: String,
-    val end_time: String,
+    val startDate: String,
+    val endDate: String,
+    val startTime: String,
+    val endTime: String,
 ) {
     fun toJson() = Json.encodeToString(serializer(), this)
 }

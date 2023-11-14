@@ -46,10 +46,10 @@ class ApiClient(
     ) {
         val scheduleCreateRequest = ScheduleCreateRequest(
             name = name,
-            start_date = startDate,
-            end_date = endDate,
-            start_time = startTime,
-            end_time = endTime,
+            startDate = startDate,
+            endDate = endDate,
+            startTime = startTime,
+            endTime = endTime,
         )
 
         with(XMLHttpRequest()) {
