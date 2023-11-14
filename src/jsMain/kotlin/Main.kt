@@ -3,10 +3,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import api.ApiClient
+import kotlinx.browser.document
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.*
 import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.HTMLInputElement
 import kotlin.js.Date
 
 fun main() {
@@ -52,24 +55,41 @@ fun renderCreatePage(callback: (Page) -> Unit) {
         }
         Form {
             Input(InputType.Text, attrs = {
+                id("name")
                 placeholder("약속 제목")
             })
             Input(InputType.Number, attrs = {
+                id("startTime")
                 placeholder("약속 시작 시각")
             })
             Input(InputType.Number, attrs = {
+                id("endTime")
                 placeholder("약속 종료 시각")
             })
             Input(InputType.Date, attrs = {
+                id("startDate")
                 placeholder("약속 시작 날짜")
                 defaultValue(now.getFormattedDate())
             })
             Input(InputType.Date, attrs = {
+                id("endDate")
                 placeholder("약속 종료 날짜")
                 defaultValue(now.getFormattedDate())
             })
-            Input(InputType.Submit, attrs = {
+            Input(InputType.Button, attrs = {
                 value("약속 만들기")
+                onClick {
+                    ApiClient().createSchedule(
+                        name = (document.getElementById("name") as HTMLInputElement).value,
+                        startTime = "${(document.getElementById("startTime") as HTMLInputElement).value}:00:00",
+                        endTime = "${(document.getElementById("endTime") as HTMLInputElement).value}:00:00",
+                        startDate = (document.getElementById("startDate") as HTMLInputElement).value,
+                        endDate = (document.getElementById("endDate") as HTMLInputElement).value,
+                        onSuccess = {
+                            println(it)
+                        },
+                    )
+                }
             })
         }
         Button(attrs = {
@@ -90,6 +110,12 @@ fun renderDetailPage(callback: (Page) -> Unit) {
         endedHour = 22,
         startDate = Date(2023, 11, 12),
         endDate = Date(2023, 11, 18),
+    )
+    val schedule = ApiClient().getSchedule(
+        3L,
+        onSuccess = {
+            println("success to get schedule. schedule: ${it.toString()}")
+        },
     )
     Div {
         H1 {
